@@ -42,3 +42,5 @@ end
 
 gem 'devise'
 
+gem 'bower-rails'
+
