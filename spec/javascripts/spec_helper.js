@@ -4,14 +4,15 @@
 // require support/jasmine-jquery-2.1.0
 // require support/sinon
 // require support/your-support-file
-//
+
 // PhantomJS (Teaspoons default driver) doesn't have support for Function.prototype.bind, which has caused confusion.
 // Use this polyfill to avoid the confusion.
-//= require support/phantomjs-shims
+//= require support/bind-poly
 //
 // You can require your own javascript files here. By default this will include everything in application, however you
 // may get better load performance if you require the specific files that are being used in the spec that tests them.
 //= require application
+//= require angular-mocks
 //
 // Deferring execution
 // If you're using CommonJS, RequireJS or some other asynchronous library you can defer execution. Call
@@ -29,4 +30,16 @@
 // If you'd rather require your spec files manually (to control order for instance) you can disable the suite matcher in
 // the configuration and use this file as a manifest.
 //
-// For more information: http://github.com/modeset/teaspoon
+beforeEach(function(){
+  jasmine.addMatchers({
+    toEqualData: function(util,customEqualityTesters) {
+      return {
+        compare: function(actual,expected) {
+          var result = {};
+          result.pass = angular.equals(actual, expected);
+          return result;
+        }
+      };
+    }
+  });
+});
