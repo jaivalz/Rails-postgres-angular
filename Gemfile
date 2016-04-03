@@ -46,3 +46,7 @@ gem 'bower-rails'
 
 gem 'faker'
 
+group :development, :test do
+  gem "rspec-rails", '~> 3.0'
+end
+
