@@ -2,10 +2,10 @@ var app = angular.module(
   'customers',
   [
     'ngRoute',
+    'ngResource',
     'templates'
   ]
 ); 
-
 app.config([
           "$routeProvider",
   function($routeProvider) {
@@ -14,7 +14,7 @@ app.config([
       templateUrl: "customer_search.html"
     }).when("/:id",{
        controller: "CustomerDetailController",
-      templateUrl: "customer_detail.html"
+      templateUrl: "customer_detail.html",
     });
   }
 ]);
@@ -22,9 +22,6 @@ app.config([
 app.controller("CustomerSearchController", [ 
           '$scope','$http','$location',
   function($scope , $http , $location) {                         
-
-   // rest of controller....
-
 
     var page = 0;
 
@@ -36,14 +33,15 @@ app.controller("CustomerSearchController", [
       }
       $http.get("/customers.json",  
                 { "params": { "keywords": searchTerm, "page": page } }
-      ).then(function(response) {
-          $scope.customers = response.data;
+      ).success(
+        function(data,status,headers,config) { 
+          $scope.customers = data;
           $scope.loading = false;
-      },function(response) {
+      }).error(
+        function(data,status,headers,config) {
           $scope.loading = false;
-          alert("There was a problem: " + response.status);
-        }
-      );
+          alert("There was a problem: " + status);
+        });
     }
 
     $scope.previousPage = function() {
@@ -62,22 +60,28 @@ app.controller("CustomerSearchController", [
     }
   }
 ]);
+
 app.controller("CustomerDetailController", [ 
-          "$scope","$http","$routeParams",
-  function($scope , $http , $routeParams) {
-
-    // Make the Ajax call and set $scope.customer...
-
+          "$scope","$routeParams","$resource",
+  function($scope , $routeParams , $resource) {
     var customerId = $routeParams.id;
-    $scope.customer = {};
+    var Customer = $resource('/customers/:customerId.json')
 
-    $http.get(
-      "/customers/" + customerId + ".json"
-    ).then(function(response) {
-        $scope.customer = response.data;
-      },function(response) {
-        alert("There was a problem: " + response.status);
-      }
-    );
+    $scope.customer = Customer.get({ "customerId": customerId})
+
+    $scope.customer.billingSameAsShipping = false;
+    $scope.$watch('customer.billing_address_id',function() {
+      $scope.customer.billingSameAsShipping = 
+        $scope.customer.billing_address_id == 
+          $scope.customer.shipping_address_id;
+    });
+  }
+]);
+
+app.controller("CustomerCreditCardController", [ 
+          "$scope","$resource",
+  function($scope , $resource) {
+    var CreditCardInfo = $resource('/fake_billing.json')
+    $scope.creditCard = CreditCardInfo.get({ "cardholder_id": 1234})
   }
 ]);
