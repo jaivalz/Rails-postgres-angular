@@ -3,6 +3,7 @@ var app = angular.module(
   [
     'ngRoute',
     'ngResource',
+    'ngMessages',
     'templates'
   ]
 ); 
@@ -80,13 +81,8 @@ app.controller("CustomerDetailController", [
     });
 
     $scope.save = function() {
-      window.blah = $scope.form;
-      if ($scope.form.email.$valid) {
-        alert("Email is valid");
-      } else if ($scope.form.email.$error.required) {
-        alert("Email is required");
-      } else if ($scope.form.email.$error.email) {
-        alert("Email must look like an email");
+      if ($scope.form.$valid) {
+        alert("Save!");
       }
     }
   }
