@@ -103,7 +103,8 @@ CREATE TABLE customers (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     insights json DEFAULT '{}'::json,
-    status customer_status DEFAULT 'signed_up'::customer_status NOT NULL
+    status customer_status DEFAULT 'signed_up'::customer_status NOT NULL,
+    bio text
 );
 
 
@@ -360,6 +361,13 @@ ALTER TABLE ONLY users
 
 
 --
+-- Name: customers_bio_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX customers_bio_index ON customers USING gin (to_tsvector('english'::regconfig, bio));
+
+
+--
 -- Name: customers_lower_email; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -438,4 +446,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160405170320');
 INSERT INTO schema_migrations (version) VALUES ('20160405171250');
 
 INSERT INTO schema_migrations (version) VALUES ('201604051719');
+
+INSERT INTO schema_migrations (version) VALUES ('20160405173433');
 

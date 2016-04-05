@@ -71,6 +71,7 @@ app.controller("CustomerDetailController", [
                              { "save": { "method": "PUT" }});
 
     // rest of the controller...
+
     $scope.customer = Customer.get({ "customerId": $scope.customerId})
 
 
@@ -110,3 +111,29 @@ app.controller("CustomerCreditCardController", [
     }
   }
 ]);
+
+app.filter("name", function() {
+  return function(input) {
+    if (!input) {
+      return input;
+    }
+
+    if ( (input.toLowerCase() === input) || (input.toUpperCase() === input) ) {
+
+      return input.charAt(0).toUpperCase() + input.slice(1).toLowerCase();
+    } 
+    else {
+      return input;
+    }
+  }
+});
+
+app.directive("customerSummary", function() {
+  return {
+    "scope": {
+      "cust": "=",
+      "viewDetailsFunction": "="
+    },
+    "templateUrl": "customer_summary.html"
+  }
+});
