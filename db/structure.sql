@@ -27,7 +27,32 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
+--
+-- Name: hstore; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS hstore WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION hstore; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION hstore IS 'data type for storing sets of (key, value) pairs';
+
+
 SET search_path = public, pg_catalog;
+
+--
+-- Name: customer_status; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE customer_status AS ENUM (
+    'signed_up',
+    'verified',
+    'inactive'
+);
+
 
 SET default_tablespace = '';
 
@@ -76,7 +101,9 @@ CREATE TABLE customers (
     email character varying NOT NULL,
     username character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    insights json DEFAULT '{}'::json,
+    status customer_status DEFAULT 'signed_up'::customer_status NOT NULL
 );
 
 
@@ -217,6 +244,8 @@ CREATE TABLE users (
     last_sign_in_ip inet,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
+    roles character varying[] DEFAULT '{}'::character varying[],
+    settings hstore DEFAULT ''::hstore,
     CONSTRAINT email_must_be_company_email CHECK (((email)::text ~* '^[^@]+@jaiv\.me'::text))
 );
 
@@ -401,4 +430,12 @@ INSERT INTO schema_migrations (version) VALUES ('20160402223453');
 INSERT INTO schema_migrations (version) VALUES ('20160403135803');
 
 INSERT INTO schema_migrations (version) VALUES ('20160404192410');
+
+INSERT INTO schema_migrations (version) VALUES ('20160405165630');
+
+INSERT INTO schema_migrations (version) VALUES ('20160405170320');
+
+INSERT INTO schema_migrations (version) VALUES ('20160405171250');
+
+INSERT INTO schema_migrations (version) VALUES ('201604051719');
 
